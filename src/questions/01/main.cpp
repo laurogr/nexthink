@@ -1,5 +1,20 @@
 #include <iostream>
 
+class A {
+ public:
+  A() { std::cout << "A::A()" << std::endl; }
+  ~A() { std::cout << "A::~A()" << std::endl; }
+  virtual void foo() { std::cout << "A::foo()" << std::endl; }
+  void bar() { std::cout << "A::bar()" << std::endl; }
+};
+
+class B : public A {
+ public:
+  B() { std::cout << "B::B()" << std::endl; };
+  ~B() { std::cout << "B::~B()" << std::endl; };
+  void foo() { std::cout << "B::foo()" << std::endl;  }
+};
+
 int main() {
   A a;
   a.foo();
