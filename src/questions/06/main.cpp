@@ -8,6 +8,7 @@ class Expression {
  public:
   virtual int evalExp() = 0;
   virtual Expression* clone() = 0;
+  //TODO : dump
 };
 
 class ConstExpression : public Expression {
@@ -80,6 +81,7 @@ class DivExpression : public BinExpression {
       : BinExpression(left, operation, right) {}
 
   int evalExp() {
+    //TODO : rightEval == 0
     int sum = left->evalExp() / right->evalExp();
     return sum;
   }
