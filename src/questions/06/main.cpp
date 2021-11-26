@@ -8,7 +8,7 @@ class Expression {
  public:
   virtual int evalExp() = 0;
   virtual Expression* clone() = 0;
-  // TODO : dump
+  virtual void dump() = 0;
 };
 
 class ConstExpression : public Expression {
@@ -19,6 +19,7 @@ class ConstExpression : public Expression {
   static ConstExpression* create(int type) { return new ConstExpression(type); }
   int evalExp() override { return this->val; }
   Expression* clone() override { return new ConstExpression(this->val); }
+  void dump() override { std::cout << val; };
 };
 
 class BinExpression : public Expression {
@@ -29,6 +30,14 @@ class BinExpression : public Expression {
 
   BinExpression(Expression* left, std::string operation, Expression* right)
       : left(left), operation(operation), right(right){};
+
+  void dump() {
+    std::cout << "(" ;
+    left->dump();
+    std::cout << this->operation ;
+    right->dump();
+    std::cout << ")" ;
+  }
 };
 
 class SumExpression : public BinExpression {
@@ -131,6 +140,8 @@ int main() {
   auto e8 = e7->clone();
 
   std::cout << e8->evalExp() << std::endl;
+
+  e8->dump();
 
   return 0;
 }
