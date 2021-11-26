@@ -8,7 +8,7 @@ class Expression {
  public:
   virtual int evalExp() = 0;
   virtual Expression* clone() = 0;
-  //TODO : dump
+  // TODO : dump
 };
 
 class ConstExpression : public Expression {
@@ -17,8 +17,8 @@ class ConstExpression : public Expression {
 
  public:
   static ConstExpression* create(int type) { return new ConstExpression(type); }
-  int evalExp() { return this->val; }
-  Expression* clone() { return new ConstExpression(this->val); }
+  int evalExp() override { return this->val; }
+  Expression* clone() override { return new ConstExpression(this->val); }
 };
 
 class BinExpression : public Expression {
@@ -40,11 +40,10 @@ class SumExpression : public BinExpression {
                                Expression* right) {
     return new SumExpression(left, operation, right);
   }
-  int evalExp() {
-    int sum = left->evalExp() + right->evalExp();
-    return sum;
-  }
-  Expression* clone() {
+
+  int evalExp() override { return left->evalExp() + right->evalExp(); }
+
+  Expression* clone() override {
     return new SumExpression(left->clone(), operation, right->clone());
   }
 };
@@ -54,11 +53,9 @@ class SubtractExpresion : public BinExpression {
   SubtractExpresion(Expression* left, std::string operation, Expression* right)
       : BinExpression(left, operation, right) {}
 
-  int evalExp() {
-    int sum = left->evalExp() - right->evalExp();
-    return sum;
-  }
-  Expression* clone() {
+  int evalExp() override { return left->evalExp() - right->evalExp(); }
+
+  Expression* clone() override {
     return new SubtractExpresion(left->clone(), operation, right->clone());
   }
 };
@@ -68,9 +65,9 @@ class MultiExpression : public BinExpression {
   MultiExpression(Expression* left, std::string operation, Expression* right)
       : BinExpression(left, operation, right) {}
 
-  int evalExp() { return left->evalExp() * right->evalExp(); }
+  int evalExp() override { return left->evalExp() * right->evalExp(); }
 
-  Expression* clone() {
+  Expression* clone() override {
     return new MultiExpression(left->clone(), operation, right->clone());
   }
 };
@@ -80,12 +77,10 @@ class DivExpression : public BinExpression {
   DivExpression(Expression* left, std::string operation, Expression* right)
       : BinExpression(left, operation, right) {}
 
-  int evalExp() {
-    //TODO : rightEval == 0
-    int sum = left->evalExp() / right->evalExp();
-    return sum;
-  }
-  Expression* clone() {
+  // TODO : rightEval == 0
+  int evalExp() override { return left->evalExp() / right->evalExp(); }
+
+  Expression* clone() override {
     return new DivExpression(left->clone(), operation, right->clone());
   }
 };
@@ -112,8 +107,6 @@ class ConstExpFactory {
   Expression* getExp(int value) { return ConstExpression::create(value); }
 };
 
-
-
 int main() {
   auto binExpFactory = new BinExpFactory();
   auto constExpFactory = new ConstExpFactory();
@@ -138,8 +131,6 @@ int main() {
   auto e8 = e7->clone();
 
   std::cout << e8->evalExp() << std::endl;
-
-
 
   return 0;
 }
