@@ -7,8 +7,7 @@
 class Expression {
  public:
   virtual int evalExp() = 0;
-  virtual Expression* copy(Expression*);
-  virtual void dump();
+  virtual Expression* clone() = 0;
 };
 
 class ConstExpression : public Expression {
@@ -16,11 +15,9 @@ class ConstExpression : public Expression {
   ConstExpression(int value) : val(value) {}
 
  public:
-  static ConstExpression* create(int type) {
-    auto consExpression = new ConstExpression(type);
-    return consExpression;
-  }
+  static ConstExpression* create(int type) { return new ConstExpression(type); }
   int evalExp() { return this->val; }
+  Expression* clone() { return new ConstExpression(this->val); }
 };
 
 class BinExpression : public Expression {
@@ -39,12 +36,15 @@ class SumExpression : public BinExpression {
 
  public:
   static SumExpression* create(Expression* left, std::string operation,
-                         Expression* right) {
+                               Expression* right) {
     return new SumExpression(left, operation, right);
   }
   int evalExp() {
     int sum = left->evalExp() + right->evalExp();
     return sum;
+  }
+  Expression* clone() {
+    return new SumExpression(left->clone(), operation, right->clone());
   }
 };
 
@@ -57,6 +57,9 @@ class SubtractExpresion : public BinExpression {
     int sum = left->evalExp() - right->evalExp();
     return sum;
   }
+  Expression* clone() {
+    return new SubtractExpresion(left->clone(), operation, right->clone());
+  }
 };
 
 class MultiExpression : public BinExpression {
@@ -64,9 +67,10 @@ class MultiExpression : public BinExpression {
   MultiExpression(Expression* left, std::string operation, Expression* right)
       : BinExpression(left, operation, right) {}
 
-  int evalExp() {
-    int sum = left->evalExp() * right->evalExp();
-    return sum;
+  int evalExp() { return left->evalExp() * right->evalExp(); }
+
+  Expression* clone() {
+    return new MultiExpression(left->clone(), operation, right->clone());
   }
 };
 
@@ -79,17 +83,25 @@ class DivExpression : public BinExpression {
     int sum = left->evalExp() / right->evalExp();
     return sum;
   }
+  Expression* clone() {
+    return new DivExpression(left->clone(), operation, right->clone());
+  }
 };
 
 class BinExpFactory {
  public:
   Expression* getExp(Expression* leftExp, std::string operation,
                      Expression* rightExp) {
-    if(operation == "+") return SumExpression::create(leftExp, operation, rightExp);
-    else if(operation == "-") return new SubtractExpresion(leftExp, operation, rightExp);
-    else if(operation == "*") return new MultiExpression(leftExp, operation, rightExp);
-    else if(operation == "/") return new DivExpression(leftExp, operation, rightExp);
-    else std::cout << "ERROR : NOT SUPPORTED" << std::endl;
+    if (operation == "+")
+      return SumExpression::create(leftExp, operation, rightExp);
+    else if (operation == "-")
+      return new SubtractExpresion(leftExp, operation, rightExp);
+    else if (operation == "*")
+      return new MultiExpression(leftExp, operation, rightExp);
+    else if (operation == "/")
+      return new DivExpression(leftExp, operation, rightExp);
+    else
+      std::cout << "ERROR : NOT SUPPORTED" << std::endl;
   }
 };
 
@@ -97,6 +109,8 @@ class ConstExpFactory {
  public:
   Expression* getExp(int value) { return ConstExpression::create(value); }
 };
+
+
 
 int main() {
   auto binExpFactory = new BinExpFactory();
@@ -107,9 +121,9 @@ int main() {
                                   constExpFactory->getExp(5));
   auto e3 = binExpFactory->getExp(e1, "+", e2);
   auto e4 = constExpFactory->getExp(19);
-  auto e5 = binExpFactory->getExp(e4,"+",e3);
-  auto e6 = binExpFactory->getExp(e5,"+",e3);
-  auto e7 = binExpFactory->getExp(e5,"-",e3);
+  auto e5 = binExpFactory->getExp(e4, "+", e3);
+  auto e6 = binExpFactory->getExp(e5, "+", e3);
+  auto e7 = binExpFactory->getExp(e5, "-", e3);
 
   std::cout << e1->evalExp() << std::endl;
   std::cout << e2->evalExp() << std::endl;
@@ -118,6 +132,12 @@ int main() {
   std::cout << e5->evalExp() << std::endl;
   std::cout << e6->evalExp() << std::endl;
   std::cout << e7->evalExp() << std::endl;
+
+  auto e8 = e7->clone();
+
+  std::cout << e8->evalExp() << std::endl;
+
+
 
   return 0;
 }
