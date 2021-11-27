@@ -1,119 +1,131 @@
 //
 // Created by lauro GONCALVES DA ROCHA on 22/11/2021.
 //
-
 #include <iostream>
 
 class Expression {
  public:
   virtual int evalExp() = 0;
-  virtual Expression* clone() = 0;
+  virtual Expression *clone() = 0;
   virtual void dump() = 0;
 };
 
 class ConstExpression : public Expression {
   int val;
+
   ConstExpression(int value) : val(value) {}
 
  public:
-  static ConstExpression* create(int type) { return new ConstExpression(type); }
+  static ConstExpression *create(int type) { return new ConstExpression(type); }
   int evalExp() override { return this->val; }
-  Expression* clone() override { return new ConstExpression(this->val); }
+  Expression *clone() override { return new ConstExpression(this->val); }
   void dump() override { std::cout << val; };
 };
 
 class BinExpression : public Expression {
  protected:
-  Expression* left;
-  Expression* right;
+  Expression *left;
+  Expression *right;
   std::string operation;
 
-  BinExpression(Expression* left, std::string operation, Expression* right)
+  BinExpression(Expression *left, std::string operation, Expression *right)
       : left(left), operation(operation), right(right){};
 
+  //TODO : add file support to dump
   void dump() {
-    std::cout << "(" ;
+    std::cout << "(";
     left->dump();
-    std::cout << this->operation ;
+    std::cout << this->operation;
     right->dump();
-    std::cout << ")" ;
+    std::cout << ")";
   }
 };
 
 class SumExpression : public BinExpression {
-  SumExpression(Expression* left, std::string operation, Expression* right)
+  SumExpression(Expression *left, std::string operation, Expression *right)
       : BinExpression(left, operation, right) {}
 
  public:
-  static SumExpression* create(Expression* left, std::string operation,
-                               Expression* right) {
+  static SumExpression *create(Expression *left, std::string operation,
+                               Expression *right) {
     return new SumExpression(left, operation, right);
   }
 
   int evalExp() override { return left->evalExp() + right->evalExp(); }
 
-  Expression* clone() override {
+  Expression *clone() override {
     return new SumExpression(left->clone(), operation, right->clone());
   }
 };
 
-class SubtractExpresion : public BinExpression {
+class SubtractExpression : public BinExpression {
  public:
-  SubtractExpresion(Expression* left, std::string operation, Expression* right)
+  SubtractExpression(Expression *left, std::string operation, Expression *right)
       : BinExpression(left, operation, right) {}
 
   int evalExp() override { return left->evalExp() - right->evalExp(); }
 
-  Expression* clone() override {
-    return new SubtractExpresion(left->clone(), operation, right->clone());
+  Expression *clone() override {
+    return new SubtractExpression(left->clone(), operation, right->clone());
   }
 };
 
 class MultiExpression : public BinExpression {
  public:
-  MultiExpression(Expression* left, std::string operation, Expression* right)
+  MultiExpression(Expression *left, std::string operation, Expression *right)
       : BinExpression(left, operation, right) {}
 
   int evalExp() override { return left->evalExp() * right->evalExp(); }
 
-  Expression* clone() override {
+  Expression *clone() override {
     return new MultiExpression(left->clone(), operation, right->clone());
   }
 };
 
 class DivExpression : public BinExpression {
  public:
-  DivExpression(Expression* left, std::string operation, Expression* right)
+  DivExpression(Expression *left, std::string operation, Expression *right)
       : BinExpression(left, operation, right) {}
 
-  // TODO : rightEval == 0
-  int evalExp() override { return left->evalExp() / right->evalExp(); }
+  int evalExp() override {
+    // TODO : DEVIDED BY ZERO
+    auto rightEval = right->evalExp();
+    auto leftEval = left->evalExp();
+    if (rightEval == 0) {
+      throw std::runtime_error("EXCEPTION : DIVISION BY ZERO");
+    }
+    return leftEval / rightEval;
+  }
 
-  Expression* clone() override {
+  Expression *clone() override {
     return new DivExpression(left->clone(), operation, right->clone());
   }
 };
 
 class BinExpFactory {
  public:
-  Expression* getExp(Expression* leftExp, std::string operation,
-                     Expression* rightExp) {
+  Expression *getExp(Expression *leftExp, std::string operation,
+                     Expression *rightExp) {
+    // TODO : INVALID EXPRESSION
+    if (!leftExp or !rightExp)
+      throw std::runtime_error("EXCEPTION : INVALID EXPRESSION");
+
     if (operation == "+")
       return SumExpression::create(leftExp, operation, rightExp);
     else if (operation == "-")
-      return new SubtractExpresion(leftExp, operation, rightExp);
+      return new SubtractExpression(leftExp, operation, rightExp);
     else if (operation == "*")
       return new MultiExpression(leftExp, operation, rightExp);
     else if (operation == "/")
       return new DivExpression(leftExp, operation, rightExp);
-    else
-      std::cout << "ERROR : NOT SUPPORTED" << std::endl;
+    else  // TODO : UNSUPORTED OP
+      throw std::runtime_error("EXCEPTION : UNSUPORTED OP");
   }
 };
 
 class ConstExpFactory {
  public:
-  Expression* getExp(int value) { return ConstExpression::create(value); }
+  Expression *getExp(int value) { return ConstExpression::create(value); }
 };
 
 int main() {
@@ -136,12 +148,22 @@ int main() {
   std::cout << e5->evalExp() << std::endl;
   std::cout << e6->evalExp() << std::endl;
   std::cout << e7->evalExp() << std::endl;
-
   auto e8 = e7->clone();
-
   std::cout << e8->evalExp() << std::endl;
-
   e8->dump();
+
+  try {
+    auto e9 = binExpFactory->getExp(e5, "/", constExpFactory->getExp(0));
+    e9->evalExp();  // exception only here, not in creation
+  } catch (...) {
+    std::cout << "Exception division by zero" << std::endl;
+  }
+
+  try {
+    auto e10 = binExpFactory->getExp(e5, "!", e3);
+  } catch (...) {
+    std::cout << "Exception unsu op" << std::endl;
+  }
 
   return 0;
 }
