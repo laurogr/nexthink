@@ -3,4 +3,4 @@ project(nexthink)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(question06 main.cpp )
+add_executable(question06 main.cpp Expressions.h)
