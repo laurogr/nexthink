@@ -3,8 +3,6 @@
 #include "MyQueue.h"
 #include "MySmartQueue.h"
 
-
-MyQueue<std::string> myStringQueue;
 MySmartQueue<std::string> mySmartQueue;
 
 void producer() {
