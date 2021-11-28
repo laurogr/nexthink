@@ -2,8 +2,8 @@
 // Created by lauro GONCALVES DA ROCHA on 20/11/2021.
 //
 
-#ifndef NEXTHINK_MYSMARTQUEUE_H
-#define NEXTHINK_MYSMARTQUEUE_H
+#ifndef NEXTHINK_SYNCQUEUE_H
+#define NEXTHINK_SYNCQUEUE_H
 
 #include <iostream>
 
@@ -16,7 +16,7 @@ struct smartNode {
 };
 
 template <typename T>
-class MySmartQueue {
+class SyncQueue {
  private:
   std::shared_ptr<struct smartNode<T>> head = { nullptr };
   std::shared_ptr<struct smartNode<T>> tail = { nullptr };
@@ -32,7 +32,7 @@ class MySmartQueue {
 };
 
 template <typename T>
-void MySmartQueue<T>::push(const T& item) {
+void SyncQueue<T>::push(const T& item) {
   auto newNode = std::make_shared<struct smartNode<T>>(item);
 
   std::lock_guard<std::mutex> lock_head(head_mutex);
@@ -49,7 +49,7 @@ void MySmartQueue<T>::push(const T& item) {
 }
 
 template <typename T>
-T MySmartQueue<T>::pop() {
+T SyncQueue<T>::pop() {
   if (!head) {
     std::cout << "pop : !head, waiting" << std::endl;
     std::unique_lock<std::mutex> lockEmptyHead(head_mutex);
@@ -63,4 +63,4 @@ T MySmartQueue<T>::pop() {
   return ret;
 }
 
-#endif  // NEXTHINK_MYSMARTQUEUE_H
+#endif  // NEXTHINK_SYNCQUEUE_H

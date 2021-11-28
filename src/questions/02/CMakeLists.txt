@@ -3,4 +3,4 @@ project(nexthink)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(question02 main.cpp MyQueue.h MySmartQueue.h)
+add_executable(question02 main.cpp SyncQueue.h)
