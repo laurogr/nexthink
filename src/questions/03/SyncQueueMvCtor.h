@@ -27,16 +27,16 @@ class SyncQueueMvCtor {
   SyncQueueMvCtor() = default;
   ~SyncQueueMvCtor() = default;
   SyncQueueMvCtor(const SyncQueueMvCtor &);
-  SyncQueueMvCtor(SyncQueueMvCtor &&);
+  SyncQueueMvCtor(SyncQueueMvCtor &&) noexcept ;
 
 
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
   void push(const T& item);  // Pushes an element into the queue
-  bool isEmpty() { return (!head) ? true : false; }
+  bool isEmpty() { return (!head); }
 };
 
 template <typename T>
-SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue) {
+SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue) noexcept {
   this->head = myQueue.head;
   this->tail = myQueue.tail;
 
