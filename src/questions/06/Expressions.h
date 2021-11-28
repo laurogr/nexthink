@@ -88,11 +88,10 @@ class DivExpression : public BinExpression {
       : BinExpression(left, operation, right) {}
  public:
   int evalExp() override {
-    // TODO : DEVIDED BY ZERO
     auto rightEval = right->evalExp();
     auto leftEval = left->evalExp();
     if (rightEval == 0) {
-      throw std::runtime_error("EXCEPTION : DIVISION BY ZERO");
+      throw std::runtime_error("DIVISION BY ZERO");
     }
     return leftEval / rightEval;
   }
@@ -106,9 +105,9 @@ class BinExpFactory {
  public:
   Expression *getExp(Expression *leftExp, std::string operation,
                      Expression *rightExp) {
-    // TODO : INVALID EXPRESSION
+
     if (!leftExp or !rightExp)
-      throw std::runtime_error("EXCEPTION : INVALID EXPRESSION");
+      throw std::runtime_error("INVALID EXPRESSION");
 
     if (operation == "+")
       return new SumExpression(leftExp, operation, rightExp);
@@ -118,8 +117,8 @@ class BinExpFactory {
       return new MultiExpression(leftExp, operation, rightExp);
     else if (operation == "/")
       return new DivExpression(leftExp, operation, rightExp);
-    else  // TODO : UNSUPORTED OP
-      throw std::runtime_error("EXCEPTION : UNSUPORTED OP");
+    else
+      throw std::runtime_error("UNSUPPORTED OPERATION");
   }
 };
 

@@ -30,14 +30,14 @@ int main() {
   try {
     auto e9 = binExpFactory->getExp(e5, "/", constExpFactory->getExp(0));
     e9->evalExp();  // exception only here, not in creation
-  } catch (...) {
-    std::cout << "Exception division by zero" << std::endl;
+  } catch(std::exception const& e) {
+    std::cout << "Exception: " << e.what() << "\n";
   }
 
   try {
     auto e10 = binExpFactory->getExp(e5, "!", e3);
-  } catch (...) {
-    std::cout << "Exception unsu op" << std::endl;
+  } catch(std::exception const& e){
+    std::cout << "Exception: " << e.what() << "\n";
   }
 
   return 0;
