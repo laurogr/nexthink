@@ -28,7 +28,7 @@ class MySmartQueue {
  public:
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
   void push(const T& item);  // Pushes an element into the queue
-  bool isEmpty() { return (!head) ? true : false; }
+  bool isEmpty() { return (!head); }
 };
 
 template <typename T>
@@ -45,7 +45,6 @@ void MySmartQueue<T>::push(const T& item) {
     this->tail->next = newNode;
     this->tail = this->tail->next;
   }
-  std::cout << "push : end of it, notify" << std::endl;
   conditionVariable.notify_one();
 }
 
@@ -55,17 +54,12 @@ T MySmartQueue<T>::pop() {
     std::cout << "pop : !head, waiting" << std::endl;
     std::unique_lock<std::mutex> lockEmptyHead(head_mutex);
     while (!head) conditionVariable.wait(lockEmptyHead);
-    // cv.wait(lockEmptyHead, std::bind(&MySmartQueue::isEmpty,this));
-    // cv.wait(lockEmptyHead, [] { return head==nullptr;});
-
-    std::cout << "pop : end waiting" << std::endl;
   }
 
   std::lock_guard<std::mutex> lock_head(head_mutex);
   T ret = head->value;
   this->head = this->head->next;
 
-  std::cout << "pop : end of it" << std::endl;
   return ret;
 }
 
