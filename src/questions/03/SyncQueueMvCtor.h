@@ -27,33 +27,31 @@ class SyncQueueMvCtor {
   SyncQueueMvCtor() = default;
   ~SyncQueueMvCtor() = default;
   SyncQueueMvCtor(const SyncQueueMvCtor &);
-  SyncQueueMvCtor(SyncQueueMvCtor &&) ;
-
+  SyncQueueMvCtor(SyncQueueMvCtor &&);
 
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
-  void push(const T& item);  // Pushes an element into the queue
+  void push(const T &item);  // Pushes an element into the queue
   bool isEmpty() { return (!head); }
 };
 
 template <typename T>
-SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue) 
-                  : head(std::move(myQueue.head)) , tail (std::move(myQueue.tail)) {
-  myQueue.head = nullptr;
-  myQueue.tail = nullptr;
+SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue)
+    : head(std::move(myQueue.head)), tail(std::move(myQueue.tail)) {
+  myQueue.head.reset();
+  myQueue.tail.reset();
 }
 
 template <typename T>
 SyncQueueMvCtor<T>::SyncQueueMvCtor(const SyncQueueMvCtor<T> &origin) {
   auto node = origin.head;
-  while(node) {
+  while (node) {
     this->push(node->value);
     node = node->next;
   }
-
 }
 
 template <typename T>
-void SyncQueueMvCtor<T>::push(const T& item) {
+void SyncQueueMvCtor<T>::push(const T &item) {
   auto newNode = std::make_shared<struct smartNode<T>>(item);
 
   std::lock_guard<std::mutex> lock_head(head_mutex);
