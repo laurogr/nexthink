@@ -27,7 +27,7 @@ class SyncQueueMvCtor {
   SyncQueueMvCtor() = default;
   ~SyncQueueMvCtor() = default;
   SyncQueueMvCtor(const SyncQueueMvCtor &);
-  SyncQueueMvCtor(SyncQueueMvCtor &&) noexcept ;
+  SyncQueueMvCtor(SyncQueueMvCtor &&) ;
 
 
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
@@ -36,10 +36,8 @@ class SyncQueueMvCtor {
 };
 
 template <typename T>
-SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue) noexcept {
-  this->head = myQueue.head;
-  this->tail = myQueue.tail;
-
+SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue) 
+                  : head(std::move(myQueue.head)) , tail (std::move(myQueue.tail)) {
   myQueue.head = nullptr;
   myQueue.tail = nullptr;
 }
