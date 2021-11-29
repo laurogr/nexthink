@@ -25,7 +25,7 @@ class SyncQueueMvCtor {
 
  public:
   SyncQueueMvCtor() = default;
-  ~SyncQueueMvCtor() = default;
+  ~SyncQueueMvCtor();
   SyncQueueMvCtor(const SyncQueueMvCtor &);
   SyncQueueMvCtor(SyncQueueMvCtor &&);
 
@@ -33,6 +33,15 @@ class SyncQueueMvCtor {
   void push(const T &item);  // Pushes an element into the queue
   bool isEmpty() { return (!head); }
 };
+
+//TODO : add operators RULE OF 5
+
+template <typename T>
+SyncQueueMvCtor<T>::~SyncQueueMvCtor() {
+  while (head) {
+    this->pop();
+  }
+}
 
 template <typename T>
 SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue)
