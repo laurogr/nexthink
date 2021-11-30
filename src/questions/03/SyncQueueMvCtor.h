@@ -25,23 +25,16 @@ class SyncQueueMvCtor {
 
  public:
   SyncQueueMvCtor() = default;
-  ~SyncQueueMvCtor();
+  ~SyncQueueMvCtor() = default;  // smart pointer will be automatically managed
   SyncQueueMvCtor(const SyncQueueMvCtor &);
   SyncQueueMvCtor(SyncQueueMvCtor &&);
+  SyncQueueMvCtor<T> &operator=(const SyncQueueMvCtor &other);
+  SyncQueueMvCtor<T> &operator=(SyncQueueMvCtor &&other);
 
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
   void push(const T &item);  // Pushes an element into the queue
   bool isEmpty() { return (!head); }
 };
-
-//TODO : add operators RULE OF 5
-
-template <typename T>
-SyncQueueMvCtor<T>::~SyncQueueMvCtor() {
-  while (head) {
-    this->pop();
-  }
-}
 
 template <typename T>
 SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue)
@@ -57,6 +50,21 @@ SyncQueueMvCtor<T>::SyncQueueMvCtor(const SyncQueueMvCtor<T> &origin) {
     this->push(node->value);
     node = node->next;
   }
+}
+
+template <typename T>
+SyncQueueMvCtor<T> &SyncQueueMvCtor<T>::operator=(SyncQueueMvCtor<T> &&other) {
+  this->head = std::move(other.head);
+  this->tail = std::move(other.tail);
+  other.head.reset();
+  other.tail.reset();
+  return *this;
+}
+
+template <typename T>
+SyncQueueMvCtor<T> &SyncQueueMvCtor<T>::operator=(
+    const SyncQueueMvCtor<T> &other) {
+  return *this = SyncQueueMvCtor(other);
 }
 
 template <typename T>

@@ -24,5 +24,16 @@ int main() {
 
   std::cout << "Origin queue isEmpty? " << originQueue.isEmpty() << std::endl;
 
+  auto copiedOperatorQueue = destinationQueue;
+
+  std::cout << copiedOperatorQueue.pop() << std::endl;
+  std::cout << copiedOperatorQueue.pop() << std::endl;
+
+  auto movedOpQueue = std::move(destinationQueue);
+
+  std::cout << movedOpQueue.pop() << std::endl;
+  std::cout << movedOpQueue.pop() << std::endl;
+
+
   return 0;
 }
