@@ -27,9 +27,9 @@ class SyncQueueMvCtor {
   SyncQueueMvCtor() = default;
   ~SyncQueueMvCtor() = default;  // smart pointer will be automatically managed
   SyncQueueMvCtor(const SyncQueueMvCtor &);
-  SyncQueueMvCtor(SyncQueueMvCtor &&);
+  SyncQueueMvCtor(SyncQueueMvCtor &&) noexcept;
   SyncQueueMvCtor<T> &operator=(const SyncQueueMvCtor &other);
-  SyncQueueMvCtor<T> &operator=(SyncQueueMvCtor &&other);
+  SyncQueueMvCtor<T> &operator=(SyncQueueMvCtor &&other) noexcept;
 
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
   void push(const T &item);  // Pushes an element into the queue
@@ -37,11 +37,9 @@ class SyncQueueMvCtor {
 };
 
 template <typename T>
-SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue)
-    : head(std::move(myQueue.head)), tail(std::move(myQueue.tail)) {
-  myQueue.head.reset();
-  myQueue.tail.reset();
-}
+SyncQueueMvCtor<T>::SyncQueueMvCtor(SyncQueueMvCtor<T> &&myQueue) noexcept
+    : head(std::exchange(myQueue.head, nullptr)),
+      tail(std::exchange(myQueue.tail, nullptr)) {}
 
 template <typename T>
 SyncQueueMvCtor<T>::SyncQueueMvCtor(const SyncQueueMvCtor<T> &origin) {
@@ -53,11 +51,12 @@ SyncQueueMvCtor<T>::SyncQueueMvCtor(const SyncQueueMvCtor<T> &origin) {
 }
 
 template <typename T>
-SyncQueueMvCtor<T> &SyncQueueMvCtor<T>::operator=(SyncQueueMvCtor<T> &&other) {
-  this->head = std::move(other.head);
-  this->tail = std::move(other.tail);
-  other.head.reset();
-  other.tail.reset();
+SyncQueueMvCtor<T> &SyncQueueMvCtor<T>::operator=(
+    SyncQueueMvCtor<T> &&other) noexcept {
+  if (this != other) {
+    this->head = std::exchange(other.head, nullptr);
+    this->tail = std::exchange(other.tail, nullptr);
+  }
   return *this;
 }
 
