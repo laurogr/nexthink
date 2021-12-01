@@ -6,15 +6,21 @@
 #define NEXTHINK_EXPRESSIONSSHAREDPTR_H
 
 #include <iostream>
-//TODO : RULE OF 5, use std::move
-//TODO : add file support
+#include <fstream>
+#include <sstream>
+// TODO : RULE OF 5, use std::move
 
 class Expression {
  public:
   virtual int evalExp() = 0;
   virtual std::shared_ptr<Expression> clone() = 0;
-  virtual void dump() = 0;
   virtual ~Expression() = default;
+  virtual std::string genExpString() = 0;
+  virtual void dump(const std::string fileName) {
+    std::ofstream f(fileName);
+    if (f.is_open()) f << this->genExpString();
+    f.close();
+  }
 };
 
 class ConstExpression : public Expression {
@@ -27,7 +33,7 @@ class ConstExpression : public Expression {
   std::shared_ptr<Expression> clone() override {
     return std::make_shared<ConstExpression>(this->val);
   }
-  void dump() override { std::cout << val; };
+  std::string genExpString() { return std::to_string(this->val); }
 };
 
 class BinExpression : public Expression {
@@ -47,12 +53,13 @@ class BinExpression : public Expression {
     }
   }
 
-  void dump() {
-    std::cout << "(";
-    left->dump();
-    std::cout << this->operation;
-    right->dump();
-    std::cout << ")";
+  std::string genExpString() {
+    std::stringstream ss;
+    ss << "(" << left->genExpString();
+    ss << this->operation;
+    ss << right->genExpString() << ")";
+
+    return ss.str();
   }
 };
 
@@ -61,7 +68,7 @@ class SumExpression : public BinExpression {
   SumExpression(std::shared_ptr<Expression> left, std::string operation,
                 std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~SumExpression()=default;
+  ~SumExpression() = default;
 
   int evalExp() override { return left->evalExp() + right->evalExp(); }
 
@@ -76,13 +83,13 @@ class SubtractExpression : public BinExpression {
   SubtractExpression(std::shared_ptr<Expression> left, std::string operation,
                      std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~SubtractExpression()=default;
+  ~SubtractExpression() = default;
 
   int evalExp() override { return left->evalExp() - right->evalExp(); }
 
   std::shared_ptr<Expression> clone() override {
     return std::make_shared<SubtractExpression>(left->clone(), operation,
-                                           right->clone());
+                                                right->clone());
   }
 };
 
@@ -91,13 +98,13 @@ class MultiExpression : public BinExpression {
   MultiExpression(std::shared_ptr<Expression> left, std::string operation,
                   std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~MultiExpression()=default;
+  ~MultiExpression() = default;
 
   int evalExp() override { return left->evalExp() * right->evalExp(); }
 
   std::shared_ptr<Expression> clone() override {
     return std::make_shared<MultiExpression>(left->clone(), operation,
-                                           right->clone());
+                                             right->clone());
   }
 };
 
@@ -106,7 +113,7 @@ class DivExpression : public BinExpression {
   DivExpression(std::shared_ptr<Expression> left, std::string operation,
                 std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~DivExpression()=default;
+  ~DivExpression() = default;
 
   int evalExp() override {
     auto rightEval = right->evalExp();
@@ -119,7 +126,7 @@ class DivExpression : public BinExpression {
 
   std::shared_ptr<Expression> clone() override {
     return std::make_shared<DivExpression>(left->clone(), operation,
-                                             right->clone());
+                                           right->clone());
   }
 };
 
@@ -146,7 +153,7 @@ class BinExpFactory {
 class ConstExpFactory {
  public:
   std::shared_ptr<ConstExpression> getExp(int value) {
-     return std::make_shared<ConstExpression>(value);
+    return std::make_shared<ConstExpression>(value);
   }
 };
 
