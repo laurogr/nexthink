@@ -43,7 +43,7 @@ class BinExpression : public Expression {
   BinExpression(std::shared_ptr<Expression> left, std::string operation,
                 std::shared_ptr<Expression> right)
       : left(left), operation(operation), right(right){};
-  }
+
 
   std::string genExpString() {
     std::stringstream ss;
