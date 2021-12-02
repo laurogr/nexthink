@@ -2,7 +2,6 @@
 // Created by lauro GONCALVES DA ROCHA on 21/11/2021.
 //
 #pragma once
-
 #include <iostream>
 
 template <typename T>

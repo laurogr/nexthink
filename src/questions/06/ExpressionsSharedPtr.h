@@ -1,10 +1,7 @@
 //
 // Created by Lauro Goncalves da Rocha on 28/11/2021.
 //
-
-#ifndef NEXTHINK_EXPRESSIONSSHAREDPTR_H
-#define NEXTHINK_EXPRESSIONSSHAREDPTR_H
-
+#pragma once
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -147,5 +144,3 @@ class ConstExpFactory {
     return std::make_shared<ConstExpression>(value);
   }
 };
-
-#endif  // NEXTHINK_EXPRESSIONSSHAREDPTR_H

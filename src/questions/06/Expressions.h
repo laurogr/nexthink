@@ -2,9 +2,7 @@
 // Created by Lauro Goncalves da Rocha on 28/11/2021.
 //
 
-#ifndef NEXTHINK_EXPRESSIONS_H
-#define NEXTHINK_EXPRESSIONS_H
-
+#pragma once
 #include <iostream>
 
 class Expression {
@@ -139,5 +137,3 @@ class ConstExpFactory {
  public:
   Expression *getExp(int value) { return new ConstExpression(value); }
 };
-
-#endif  // NEXTHINK_EXPRESSIONS_H

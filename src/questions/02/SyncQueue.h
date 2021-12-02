@@ -1,10 +1,7 @@
 //
 // Created by lauro GONCALVES DA ROCHA on 20/11/2021.
 //
-
-#ifndef NEXTHINK_SYNCQUEUE_H
-#define NEXTHINK_SYNCQUEUE_H
-
+#pragma once
 #include <iostream>
 
 template <typename T>
@@ -62,5 +59,3 @@ T SyncQueue<T>::pop() {
 
   return ret;
 }
-
-#endif  // NEXTHINK_SYNCQUEUE_H
