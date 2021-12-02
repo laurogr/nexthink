@@ -14,7 +14,6 @@ class Expression {
  public:
   virtual int evalExp() = 0;
   virtual std::shared_ptr<Expression> clone() = 0;
-  virtual ~Expression() = default;
   virtual std::string genExpString() = 0;
   virtual void dump(const std::string fileName) {
     std::ofstream f(fileName);
@@ -28,7 +27,6 @@ class ConstExpression : public Expression {
 
  public:
   ConstExpression(int value) : val(value) {}
-  ~ConstExpression() = default;
   int evalExp() override { return this->val; }
   std::shared_ptr<Expression> clone() override {
     return std::make_shared<ConstExpression>(this->val);
@@ -45,12 +43,6 @@ class BinExpression : public Expression {
   BinExpression(std::shared_ptr<Expression> left, std::string operation,
                 std::shared_ptr<Expression> right)
       : left(left), operation(operation), right(right){};
-
-  ~BinExpression() {
-    if (left) {
-      left.reset();
-      right.reset();
-    }
   }
 
   std::string genExpString() {
@@ -68,7 +60,6 @@ class SumExpression : public BinExpression {
   SumExpression(std::shared_ptr<Expression> left, std::string operation,
                 std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~SumExpression() = default;
 
   int evalExp() override { return left->evalExp() + right->evalExp(); }
 
@@ -83,7 +74,6 @@ class SubtractExpression : public BinExpression {
   SubtractExpression(std::shared_ptr<Expression> left, std::string operation,
                      std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~SubtractExpression() = default;
 
   int evalExp() override { return left->evalExp() - right->evalExp(); }
 
@@ -98,7 +88,6 @@ class MultiExpression : public BinExpression {
   MultiExpression(std::shared_ptr<Expression> left, std::string operation,
                   std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~MultiExpression() = default;
 
   int evalExp() override { return left->evalExp() * right->evalExp(); }
 
@@ -113,7 +102,6 @@ class DivExpression : public BinExpression {
   DivExpression(std::shared_ptr<Expression> left, std::string operation,
                 std::shared_ptr<Expression> right)
       : BinExpression(left, operation, right) {}
-  ~DivExpression() = default;
 
   int evalExp() override {
     auto rightEval = right->evalExp();
