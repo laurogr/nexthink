@@ -1,7 +1,7 @@
 //
 // Created by lauro GONCALVES DA ROCHA on 22/11/2021.
 //
-#include "Expressions.h"
+#include "ExpressionsSharedPtr.h"
 
 int main() {
   auto binExpFactory = new BinExpFactory();
@@ -25,7 +25,7 @@ int main() {
   std::cout << e7->evalExp() << std::endl;
   auto e8 = e7->clone();
   std::cout << e8->evalExp() << std::endl;
-  e8->dump();
+  e8->dump("toto.txt");
 
   try {
     auto e9 = binExpFactory->getExp(e5, "/", constExpFactory->getExp(0));
