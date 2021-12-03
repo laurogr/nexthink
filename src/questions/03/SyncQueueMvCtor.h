@@ -71,12 +71,12 @@ void SyncQueueMvCtor<T>::push(const T &item) {
 
   std::lock_guard<std::mutex> lock_head(head_mutex);
   if (!head) {
-    this->head = newNode;
+    this->head = std::move(newNode);
     std::lock_guard<std::mutex> lock_tail(tail_mutex);
-    this->tail = newNode;
+    this->tail = this->head;
   } else {
     std::lock_guard<std::mutex> lock_tail(tail_mutex);
-    this->tail->next = newNode;
+    this->tail->next = std::move(newNode);
     this->tail = this->tail->next;
   }
   conditionVariable.notify_one();
