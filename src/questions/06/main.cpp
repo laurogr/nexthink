@@ -25,7 +25,10 @@ int main() {
   std::cout << e7->evalExp() << std::endl;
   auto e8 = e7->clone();
   std::cout << e8->evalExp() << std::endl;
-  e8->dump("toto.txt");
+
+  //e8->dump("toto.txt");
+  ExpressionDumper dumper;
+  dumper.dump("toto.txt",e8);
 
   try {
     auto e9 = binExpFactory->getExp(e5, "/", constExpFactory->getExp(0));

@@ -11,10 +11,14 @@ class Expression {
  public:
   virtual int evalExp() = 0;
   virtual std::shared_ptr<Expression> clone() = 0;
-  virtual std::string genExpString() = 0;
-  virtual void dump(const std::string& fileName) {
+  virtual std::string genExpString() const = 0;
+};
+
+class ExpressionDumper {
+ public:
+  void dump(const std::string& fileName, const std::shared_ptr<Expression>& expression) {
     std::ofstream f(fileName);
-    if (f.is_open()) f << this->genExpString();
+    if (f.is_open()) f << expression->genExpString();
     f.close();
   }
 };
@@ -24,11 +28,11 @@ class ConstExpression : public Expression {
 
  public:
   ConstExpression(int value) : val(value) {}
-  int evalExp() override { return this->val; }
+  int evalExp() override { return val; }
   std::shared_ptr<Expression> clone() override {
-    return std::make_shared<ConstExpression>(this->val);
+    return std::make_shared<ConstExpression>(val);
   }
-  std::string genExpString() override { return std::to_string(this->val); }
+  std::string genExpString() const override { return std::to_string(val); }
 };
 
 class BinExpression : public Expression {
@@ -43,10 +47,10 @@ class BinExpression : public Expression {
         operation(std::move(operation)),
         right(std::move(right)){};
 
-  std::string genExpString() override {
+  std::string genExpString() const override {
     std::stringstream ss;
     ss << "(" << left->genExpString();
-    ss << this->operation;
+    ss << operation;
     ss << right->genExpString() << ")";
 
     return ss.str();
