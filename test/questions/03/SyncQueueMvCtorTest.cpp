@@ -2,7 +2,7 @@
 // Created by Lauro Goncalves da Rocha on 03/12/2021.
 //
 #include "gtest/gtest.h"
-#include "SyncQueueMvCtor.h"
+#include "questions/03/SyncQueueMvCtor.h"
 
 class SyncQueueTest : public ::testing::Test {
  protected:
