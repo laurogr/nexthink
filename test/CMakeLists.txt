@@ -7,6 +7,6 @@ include_directories(/opt/homebrew/include /opt/homebrew)
 include_directories(../src/)
 link_directories(/opt/homebrew/lib)
 
-add_executable(Google_Tests_run questions/03/SyncQueueMvCtorTest.cpp)
+add_executable(Google_Tests_run questions/03/SyncQueueMvCtorTest.cpp questions/06/ExpressionTest.cpp)
 target_link_libraries(Google_Tests_run)
 target_link_libraries(Google_Tests_run gtest gtest_main)
