@@ -25,21 +25,23 @@ class SyncQueue {
  public:
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
   void push(const T& item);  // Pushes an element into the queue
-  bool isEmpty() { return (!head); }
+  bool isEmpty() {
+    std::lock_guard<std::mutex> lock_head(head_mutex);
+    return (!head);
+  }
 };
 
 template <typename T>
 void SyncQueue<T>::push(const T& item) {
   auto newNode = std::make_shared<struct smartNode<T>>(item);
 
-  std::lock_guard<std::mutex> lock_head(head_mutex);
-  if (!head) {
-    this->head = newNode;
-    std::lock_guard<std::mutex> lock_tail(tail_mutex);
-    this->tail = newNode;
+  if (isEmpty()) {
+    std::scoped_lock<std::mutex, std::mutex> lock(head_mutex, tail_mutex);
+    this->head = std::move(newNode);
+    this->tail = this->head;
   } else {
     std::lock_guard<std::mutex> lock_tail(tail_mutex);
-    this->tail->next = newNode;
+    this->tail->next = std::move(newNode);
     this->tail = this->tail->next;
   }
   conditionVariable.notify_one();
@@ -47,15 +49,15 @@ void SyncQueue<T>::push(const T& item) {
 
 template <typename T>
 T SyncQueue<T>::pop() {
-  if (!head) {
-    std::cout << "pop : !head, waiting" << std::endl;
+  if (isEmpty()) {
     std::unique_lock<std::mutex> lockEmptyHead(head_mutex);
-    while (!head) conditionVariable.wait(lockEmptyHead);
+    conditionVariable.wait(lockEmptyHead, [this] { return head; });
   }
 
-  std::lock_guard<std::mutex> lock_head(head_mutex);
+  std::unique_lock<std::mutex> lock_head(head_mutex);
   T ret = head->value;
   this->head = this->head->next;
+  lock_head.unlock();
 
   return ret;
 }

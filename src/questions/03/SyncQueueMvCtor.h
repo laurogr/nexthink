@@ -32,7 +32,10 @@ class SyncQueueMvCtor {
 
   T pop();  // Pops an element from the queue. It blocks if the queue is empty.
   void push(const T &item);  // Pushes an element into the queue
-  bool isEmpty() { return (!head); }
+  bool isEmpty() {
+    std::lock_guard<std::mutex> lock_head(head_mutex);
+    return (!head);
+  }
 };
 
 template <typename T>
@@ -69,10 +72,9 @@ template <typename T>
 void SyncQueueMvCtor<T>::push(const T &item) {
   auto newNode = std::make_shared<struct smartNode<T>>(item);
 
-  std::lock_guard<std::mutex> lock_head(head_mutex);
-  if (!head) {
+  if (isEmpty()) {
+    std::scoped_lock<std::mutex, std::mutex> lock(head_mutex, tail_mutex);
     this->head = std::move(newNode);
-    std::lock_guard<std::mutex> lock_tail(tail_mutex);
     this->tail = this->head;
   } else {
     std::lock_guard<std::mutex> lock_tail(tail_mutex);
@@ -86,7 +88,7 @@ template <typename T>
 T SyncQueueMvCtor<T>::pop() {
   if (!head) {
     std::unique_lock<std::mutex> lockEmptyHead(head_mutex);
-    while (!head) conditionVariable.wait(lockEmptyHead);
+    conditionVariable.wait(lockEmptyHead,[this](){return head;});
   }
 
   std::lock_guard<std::mutex> lock_head(head_mutex);
