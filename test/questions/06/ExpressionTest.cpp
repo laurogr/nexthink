@@ -21,8 +21,10 @@ class ExpressionTest : public ::testing::Test {
     e6 = binExpFactory->getExp(e5, "*", e3);
     e7 = binExpFactory->getExp(e5, "/", constExpFactory->getExp(4));
     e8 = e3->clone();
+    e9 = binExpFactory->getExp(constExpFactory->getExp(5),"/",constExpFactory->getExp(0));
+
   }
-  std::shared_ptr<Expression> e1,e2,e3,e4,e5,e6,e7,e8;
+  std::shared_ptr<Expression> e1,e2,e3,e4,e5,e6,e7,e8,e9;
 
   // void TearDown() override {}
 };
@@ -55,4 +57,6 @@ TEST_F(ExpressionTest, CloneExp) {
   ASSERT_EQ(e8->evalExp(),35);
 }
 
-
+TEST_F(ExpressionTest, ZeroDiv) {
+  EXPECT_ANY_THROW(e9->evalExp());
+}
